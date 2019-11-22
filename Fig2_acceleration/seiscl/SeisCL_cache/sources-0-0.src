@@ -1,0 +1,21 @@
+extern "C" __global__ void sources(int nt, int nsrc,int src_scale, float * src_pos, float * src, int pdir,  float * vx){
+
+    int gid = blockIdx.x*blockDim.x + threadIdx.x;
+    if (gid > nsrc -1){
+        return;
+    }
+
+    int i=(int)(src_pos[0+5*gid]/DH)+FDOH;
+    int j=(int)(src_pos[1+5*gid]/DH)+FDOH;
+    int k=(int)(src_pos[2+5*gid]/DH)+FDOH;
+
+    if (i-OFFSET<FDOH || i-OFFSET>NX-FDOH-1){
+        return;
+    }
+
+    int source_type= src_pos[4+5*gid];
+    float amp=scalbnf((float)pdir*(DT*src[gid*NT+nt]), src_scale);
+
+    vx[(i-OFFSET)*NZ*2+k]+=amp;
+
+}

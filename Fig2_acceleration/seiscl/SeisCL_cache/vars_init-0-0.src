@@ -1,0 +1,17 @@
+extern "C" __global__ void vars_init( float * vx,  float * vz,  float * sxx,  float * szz,  float * sxz){
+
+int gidz = blockIdx.x*blockDim.x + threadIdx.x;
+int gidx = blockIdx.y*blockDim.y + threadIdx.y;
+int gid = gidx*blockDim.x*gridDim.x+gidz;
+    if (gid<336400)
+        vx[gid]=0;
+    if (gid<336400)
+        vz[gid]=0;
+    if (gid<336400)
+        sxx[gid]=0;
+    if (gid<336400)
+        szz[gid]=0;
+    if (gid<336400)
+        sxz[gid]=0;
+
+}
