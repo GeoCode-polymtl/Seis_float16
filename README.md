@@ -1,6 +1,6 @@
 **Status:** Archive (code is provided as-is, no updates expected)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3492115.svg)](https://doi.org/10.5281/zenodo.3492115)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3551151.svg)](https://doi.org/10.5281/zenodo.3551150)
 
 ![]( Fig3_4_6_error/BPresults.png)
 # Seismic modelling in FP16
