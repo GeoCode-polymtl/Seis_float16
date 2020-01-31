@@ -101,6 +101,7 @@ def fd_solution(seis, vp=3500, vs=2000, rho=2000,
 
     workdir = "./seiscl"
     fileout = "./" + seis.file + "_fp%d_dir%s.mat" % (fp16, dir)
+    print(fileout)
     if not os.path.isdir(workdir):
         os.mkdir(workdir)
     nbuf = seis.csts['FDORDER']*2
@@ -211,6 +212,9 @@ def main(vp=3500, vs=2000, rho=2000,
         vz_true = vz[1:NT, :]-vz[:NT-1, :]
         vz_true = vz_true / np.max(vz_true)
         vz_num = data / np.max(data)
+        norm = np.max(vz_true[:,-1])
+        vz_true = vz_true / norm
+        vz_num = vz_num / norm
         if fp16 == 1:
             vref = vz_num
             err = np.sum((vz_true[:,-1] - vref[:,-1])**2) / np.sum((vz_true[:,-1])**2) * 100
@@ -225,20 +229,26 @@ def main(vp=3500, vs=2000, rho=2000,
         axs[fp16-1, 0].set_xlabel("Time (s)")
         axs[fp16-1, 0].set_ylabel("Amplitude")
         axs[fp16-1, 0].set_title(titles[0][fp16-1])
-        axs[fp16-1, 0].text(1.85, 0.0027, "Error X 10", ha='right', weight='bold')
-        
+        axs[fp16-1, 0].text(1.85, 0.7, "Error X 10", ha='right', weight='bold')
+        axs[fp16-1, 0].set_ylim([-1.2, 1.2])        
+
         Vz_true = np.fft.fft(vz_true[:, -1], axis=0)
         Vz_num = np.fft.fft(vz_num[:, -1], axis=0)
-        plots[2], = axs[fp16-1, 1].loglog(freqs[:NT//2], 2*np.abs(Vz_true-Vz_num)[:NT//2], "g")
-        plots[0], = axs[fp16-1, 1].loglog(freqs[:NT//2], 2*np.abs(Vz_true)[:NT//2], "k")
-        plots[1], = axs[fp16-1, 1].loglog(freqs[:NT//2], 2*np.abs(Vz_num)[:NT//2], "r")
-        axs[fp16-1, 1].set_ylim([10**-10, 10**0])
+        Vz_true_a = 2*np.abs(Vz_true)[:NT//2]
+        norm = np.max(Vz_true)
+        Vz_true_a = Vz_true_a / norm
+        Vz_num_a = 2*np.abs(Vz_num)[:NT//2] / norm
+        Vz_diff_a = 2*np.abs(Vz_true-Vz_num)[:NT//2] / norm
+        plots[2], = axs[fp16-1, 1].loglog(freqs[:NT//2], Vz_diff_a, "g")
+        plots[0], = axs[fp16-1, 1].loglog(freqs[:NT//2], Vz_true_a, "k")
+        plots[1], = axs[fp16-1, 1].loglog(freqs[:NT//2], Vz_num_a, "r")
+        axs[fp16-1, 1].set_ylim([10**-8, 10**1])
         axs[fp16-1, 1].set_xlabel("Frequency (Hz)")
         axs[fp16-1, 1].set_ylabel("Amplitude")
         axs[fp16-1, 1].set_title(titles[1][fp16-1])
         #axs[fp16-1, 1].set_xscale('log', basex=2)
         axs[fp16-1, 1].set_yscale('log', basey=2)
-        axs[fp16-1, 1].set_yticks([2**-2, 2**-10, 2**-18, 2**-26, 2**-34]   )
+        axs[fp16-1, 1].set_yticks([2**-0, 2**-8, 2**-16, 2**-24, 2**-32]   )
 
         if fp16==1:
             axs[fp16-1, 1].legend(plots[0:3], labels[0:3], loc='upper right',bbox_to_anchor=(1.05, 1.5), framealpha=1)
